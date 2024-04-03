@@ -1,0 +1,84 @@
+name: voiceover-chrome
+on:
+  workflow_dispatch:
+
+env:
+  BROWSER: chrome
+
+jobs:
+  nvda-chrome:
+    runs-on: macos-13
+    steps:
+      # Checkout all repos first (helps cache purposes)
+      - uses: actions/checkout@v3
+
+      - name: Checkout aria-at ref master
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at"
+          path: "aria-at"
+          ref: "master"
+
+      - name: Checkout aria-at-automation-driver
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at-automation-driver"
+          ref: "automate-darwin-ci-install"
+          path: "aria-at-automation-driver"
+
+      - name: Checkout aria-at-automation-harness
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at-automation-harness"
+          ref: "main"
+          path: "aria-at-automation-harness"
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+        id: setup-chrome
+      - run: |
+          echo "Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }} ${{ steps.setup-chrome.outputs.chrome-path }}"
+
+      - name: "aria-at: npm install"
+        run: |
+          cd aria-at
+          npm install
+
+      - name: "aria-at: npm run build"
+        run: |
+          cd aria-at
+          npm run build
+
+      - name: "automation-harness: npm install"
+        run: |
+          cd aria-at-automation-harness
+          npm install
+
+      - name: "aria-at-automation-driver: build xcode project"
+        run: |
+          cd aria-at-automation-driver/src/macos/ATDriverGenericMacOS
+          xcodebuild
+
+          APP_PATH="./build/Release/ATDriverGenericMacOS.app"
+          if [ -d "$APP_PATH" ]; then
+            echo "Application build succeeded, and app bundle exists."
+          else
+            echo "Build succeeded but app bundle does not exist."
+            exit 1
+          fi
+
+          # Check if the app is executable
+          if [ -x "$APP_PATH/Contents/MacOS/ATDriverGenericMacOS" ]; then
+            echo "Application is executable."
+          else
+            echo "Application is not executable."
+            exit 1
+          fi
