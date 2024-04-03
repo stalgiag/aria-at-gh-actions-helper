@@ -12,12 +12,6 @@ jobs:
       # Checkout all repos first (helps cache purposes)
       - uses: actions/checkout@v3
 
-      - name: Checkout nvda-at-automation driver
-        uses: actions/checkout@v3
-        with:
-          repository: "Prime-Access-Consulting/nvda-at-automation"
-          path: "nvda-at-automation"
-
       - name: Checkout aria-at ref master
         uses: actions/checkout@v3
         with:
@@ -45,16 +39,6 @@ jobs:
         id: setup-chrome
       - run: |
           echo "Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }} ${{ steps.setup-chrome.outputs.chrome-path }}"
-
-      - uses: actions/setup-go@v4
-        with:
-          go-version: "1.18"
-          cache-dependency-path: nvda-at-automation/Server/go.sum
-
-      # - name: Compile at-automation driver
-      #   run: |
-      #     cd nvda-at-automation/Server
-      #     go build main/main.go
 
       - name: "aria-at: npm install"
         run: |
