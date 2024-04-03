@@ -1,4 +1,4 @@
-name: nvda-chrome
+name: voiceover-chrome
 on:
   workflow_dispatch:
 
