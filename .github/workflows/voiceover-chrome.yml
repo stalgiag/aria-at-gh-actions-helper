@@ -19,6 +19,13 @@ jobs:
           path: "aria-at"
           ref: "master"
 
+      - name: Checkout aria-at-automation-driver
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at-automation-driver"
+          ref: "automate-darwin-ci-install"
+          path: "aria-at-automation-driver"
+
       - name: Checkout aria-at-automation-harness
         uses: actions/checkout@v3
         with:
@@ -54,3 +61,8 @@ jobs:
         run: |
           cd aria-at-automation-harness
           npm install
+
+      - name: "aria-at-automation-driver: build xcode project"
+        run: |
+          cd aria-at-automation-driver/src/macos/ATDriverGenericMacOS
+          xcodebuild
