@@ -88,5 +88,6 @@ jobs:
       - name: "aria-at-automation-driver: at-driver install"
         run: |
           cd aria-at-automation-driver
+          npm install
           chmod +x ./bin/at-driver
           ./bin/at-driver install
