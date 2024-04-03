@@ -1,0 +1,72 @@
+name: nvda-chrome
+on:
+  workflow_dispatch:
+
+env:
+  BROWSER: chrome
+
+jobs:
+  nvda-chrome:
+    runs-on: macos-13
+    steps:
+      # Checkout all repos first (helps cache purposes)
+      - uses: actions/checkout@v3
+
+      - name: Checkout nvda-at-automation driver
+        uses: actions/checkout@v3
+        with:
+          repository: "Prime-Access-Consulting/nvda-at-automation"
+          path: "nvda-at-automation"
+
+      - name: Checkout aria-at ref master
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at"
+          path: "aria-at"
+          ref: "master"
+
+      - name: Checkout aria-at-automation-harness
+        uses: actions/checkout@v3
+        with:
+          repository: "w3c/aria-at-automation-harness"
+          ref: "main"
+          path: "aria-at-automation-harness"
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+        id: setup-chrome
+      - run: |
+          echo "Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }} ${{ steps.setup-chrome.outputs.chrome-path }}"
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.18"
+          cache-dependency-path: nvda-at-automation/Server/go.sum
+
+      # - name: Compile at-automation driver
+      #   run: |
+      #     cd nvda-at-automation/Server
+      #     go build main/main.go
+
+      - name: "aria-at: npm install"
+        run: |
+          cd aria-at
+          npm install
+
+      - name: "aria-at: npm run build"
+        run: |
+          cd aria-at
+          npm run build
+
+      - name: "automation-harness: npm install"
+        run: |
+          cd aria-at-automation-harness
+          npm install
