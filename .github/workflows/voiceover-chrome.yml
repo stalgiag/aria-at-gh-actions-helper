@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: "w3c/aria-at-automation-driver"
-          ref: "automate-darwin-ci-install"
+          ref: "automate-darwin-ci-install-forced-capabilities"
           path: "aria-at-automation-driver"
 
       - name: Checkout aria-at-automation-harness
