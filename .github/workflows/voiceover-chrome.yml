@@ -93,8 +93,6 @@ jobs:
             exit 1
           fi
 
-          open "$APP_PATH"
-
       - name: "aria-at-automation-driver: at-driver install"
         run: |
           cd aria-at-automation-driver
